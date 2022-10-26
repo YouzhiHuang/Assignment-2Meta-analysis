@@ -1,0 +1,5 @@
+"0",""
+"0","ggplot(arnold_data_endo, aes(y = 1/sqrt(Zr_v), x = tanh(Zr))) + "
+"0","  geom_point() + geom_vline(aes(xintercept = 0)) + labs(y = ""Precision (1/SE)"", x = ""Correlation Coefficient (r)"") +"
+"0","  theme_bw()"
+"0",""

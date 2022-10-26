@@ -1,0 +1,113 @@
+---
+title: Assignment #2: Meta-analysis of Ocean Acidification Effects on Behaviour.
+author: "u7457916 Youzhi Huang"
+date: "2022/10/25"
+output:
+ bookdown::html_document2:
+    code_folding: show
+    number_sections: no
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+[My GitHub Repository](https://github.com/YouzhiHuang/Assignment-2Meta-analysis-of-Ocean-Acidification-Effects-on-Behaviour)
+
+## **Load the necessary R Packages**
+
+```{r loadpacks, message=FALSE, results='hide'}
+# Install a load of packages that we'll use.
+library(pacman)
+p_load(bookdown, devtools, tidyverse, ggforce, GGally, flextable, latex2exp, png, magick, metafor, MASS, emmeans, R.rsp)
+# Install the orchaRd package 
+# devtools::install_github("daniel1noble/orchaRd", force = TRUE)
+library(orchaRd)
+```
+## Analysis of[Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) for each of the fish species’ `average activity` for each treatment.
+
+```{r}
+# Load data file from the data folder
+path <- "./data/OA_activitydat_20190302_BIOL3207.csv"
+data <- read_csv(path)
+# Code to removing missing data 
+comp_data <-  data %>% drop_na()
+# Drop irrelevant columns
+Sp_Tr <- comp_data %>% dplyr::select(-c(...1,comment,loc,animal_id,sl,size))
+# Check spelling in species and treatment but also generate a summary table
+unique(Sp_Tr$species)
+unique(Sp_Tr$treatment)
+# Use flextable to render the summary table in a tidy format
+use_df_printer()
+set_flextable_defaults(
+  theme_fun = theme_booktabs,
+  big.mark = " ", 
+  font.color = "#666666",
+  border.color = "#666666",
+  padding = 3,
+)
+# Create a summary of the original dataset.
+dat <- Sp_Tr %>%
+  group_by(treatment,species) %>%
+  summarise(n=n(),
+    across(
+      where(is.numeric), 
+      .fns = list(
+        avg = ~ mean(.x, na.rm = TRUE),
+        sd = ~ sd(.x, na.rm = TRUE)
+      )
+    ),.groups = "drop" ) %>%
+  subset(select=-c(n_avg,n_sd))
+fdata <-  as_tibble(dat)
+# Use flextable to render the summary table
+ft <-  fdata%>%
+  flextable() %>%
+  separate_header() %>%
+  merge_v(j = c("treatment","species")) %>%
+  theme_booktabs(bold_header = TRUE)  %>% 
+  valign(j = 1, valign = "top") %>%
+  colformat_double(digits = 2)%>%
+  align(align = "center", part = "all", j = 4:5)%>%
+  footnote(i = 2, j = grep("avg", colnames(fdata), value = TRUE), 
+           part = "header",
+           ref_symbols = " ",
+            value = as_paragraph("avg: Arithmetic Mean")) %>% 
+  footnote(i = 2, j = grep("sd", colnames(fdata), value = TRUE), 
+           part = "header",
+           ref_symbols = " ", value = as_paragraph("sd: Standard Deviation"))%>%
+  autofit() 
+ft 
+```
+
+## Merge the summary statistics generated from 1) with the metadata
+
+```{r}
+# Load data file from the data folder
+matadata <- read_csv("./data/clark_paper_data.csv")
+wider <- pivot_wider(fdata,names_from = treatment, values_from = c(n,activity_avg,activity_sd))
+names(wider) <- c("Species","oa.n","ctrl.n","oa.mean","ctrl.mean","oa.sd","ctrl.sd")
+matadatarep <- matadata[rep(seq_len(nrow(matadata)),each=6),]
+meta_clark <- bind_cols(matadatarep,wider)
+meta_clark
+```
+
+
+## merge metadata from larger meta-analysis datase
+
+```{r}
+ocean_matadata <- read_csv("./data/ocean_meta_data.csv")
+ocean_mata_data <- merge(x = ocean_matadata, y = meta_clark, all = TRUE)
+oceanmatadata
+```
+
+```{r}
+
+
+```
+
+
+
+

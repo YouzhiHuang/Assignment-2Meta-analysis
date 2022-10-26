@@ -1,0 +1,14 @@
+"0","ocean_matadata <- read_csv(""./data/ocean_meta_data.csv"")"
+"1","[1mRows: [22m[34m818[39m [1mColumns: [22m[34m22[39m
+"
+"1","[36m--[39m [1mColumn specification[22m [36m---------------------------------------------------------------------------------------------------[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (13): Study, Authors, Title, Journal, Pub year IF, 2017 IF, Effect type, Species, Climate (FishBase), Env cue/stimu...
+[32mdbl[39m  (9): Year (online), Year (print), Average n, ctrl.n, ctrl.mean, ctrl.sd, oa.n, oa.mean, oa.sd
+"
+"1","
+[36mi[39m Use `spec()` to retrieve the full column specification for this data.
+[36mi[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","ocean_mata_data <- merge(x = ocean_matadata, y = meta_clark, all = TRUE)"
+"0","ocean_mata_data"

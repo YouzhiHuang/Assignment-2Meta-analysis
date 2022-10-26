@@ -1,0 +1,4 @@
+"0","# Load packages"
+"0","pacman::p_load(metafor, flextable, tidyverse, orchaRd, pander, mathjaxr, equatags, vembedr, tidyverse)"
+"0",""
+"0","# To use mathjaxr you need to run equatags::mathjax_install()"

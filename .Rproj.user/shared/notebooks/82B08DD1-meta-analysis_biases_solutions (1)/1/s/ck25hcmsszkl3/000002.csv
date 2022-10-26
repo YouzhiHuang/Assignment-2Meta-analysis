@@ -1,0 +1,4 @@
+"0",""
+"0","ggplot(arnold_data_endo, aes(y = Zr, x = Year, size = 1/sqrt(Zr_v))) + geom_point(alpha = 0.30) + geom_smooth(method = lm, col = ""red"", show.legend = FALSE) + labs(x = ""Publication Year"", y = ""Fisher's Z-transformed Correlation Coefficient (Zr)"", size = ""Precision (1/SE)"") + theme_classic()"
+"2","`geom_smooth()` using formula 'y ~ x'
+"

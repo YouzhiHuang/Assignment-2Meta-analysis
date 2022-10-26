@@ -1,0 +1,8 @@
+"0",""
+"0","# Lets make a funnel plot to visualize the data in relation to the precision, inverse sampling standard error, "
+"0","metafor::funnel(x = arnold_data_endo$Zr, vi = arnold_data_endo$Zr_v, "
+"0","                yaxis = ""seinv"", digits = 2, "
+"0","                level = c(0.1, 0.05, 0.01), "
+"0","                shade = c(""white"", ""gray55"", ""gray 75""), las = 1, "
+"0","                xlab = ""Correlation Coefficient (r)"", atransf=tanh, legend = TRUE)"
+"0",""

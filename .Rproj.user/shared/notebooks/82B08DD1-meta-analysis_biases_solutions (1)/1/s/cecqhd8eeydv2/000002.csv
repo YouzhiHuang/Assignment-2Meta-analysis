@@ -1,0 +1,2 @@
+"0","arnold_data_endo <- arnold_data_endo %>% mutate(Year_c = Year - mean(Year)) # 'ADD YOUR CODE HERE'"
+"0",""

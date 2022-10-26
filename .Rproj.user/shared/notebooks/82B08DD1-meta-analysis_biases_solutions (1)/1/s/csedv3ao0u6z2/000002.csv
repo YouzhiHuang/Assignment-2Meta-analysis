@@ -1,0 +1,7 @@
+"0","ggplot(arnold_data_endo, aes(y = Zr, x = Zr_v)) + "
+"0","  geom_point() + "
+"0","  geom_smooth(method = lm) + "
+"0","  labs(y = ""Fisher's Z-transformed Correlation Coefficient (Zr)"", x = ""Sampling Variance of Zr"") +"
+"0","  theme_classic()"
+"2","`geom_smooth()` using formula 'y ~ x'
+"

@@ -1,0 +1,26 @@
+{
+    "id": "6E395908",
+    "path": "~/GitHub/Assignment#2Meta-analysis of Ocean Acidification Effects on Behaviour/data/ocean_meta_data.csv",
+    "project_path": "data/ocean_meta_data.csv",
+    "type": "text",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1666752757501.0,
+    "source_on_save": false,
+    "relative_order": 9,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "0,233",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1666642212,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1666642212,
+    "read_only": false,
+    "read_only_alternatives": []
+}

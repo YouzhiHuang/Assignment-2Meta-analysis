@@ -1,0 +1,6 @@
+"0","# Install a load of packages that we'll use."
+"0","library(pacman)"
+"0","p_load(bookdown, devtools, tidyverse, ggforce, GGally, flextable, latex2exp, png, magick, metafor, MASS, emmeans, R.rsp)"
+"0","# Install the orchaRd package "
+"0","# devtools::install_github(""daniel1noble/orchaRd"", force = TRUE)"
+"0","library(orchaRd)"

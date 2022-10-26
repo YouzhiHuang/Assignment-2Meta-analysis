@@ -1,0 +1,29 @@
+"0","# Packages"
+"0","pacman::p_load(tidyverse, metafor, orchaRd)"
+"0",""
+"0","# Download the data. Exclude NA in r and sample size columns"
+"0","arnold_data <- read_csv(""https://raw.githubusercontent.com/pieterarnold/fitness-rmr-meta/main/MR_Fitness_Data_revised.csv"")"
+"1","[1mRows: [22m[34m385[39m [1mColumns: [22m[34m24[39m
+"
+"1","[36m--[39m [1mColumn specification[22m [36m---------------------------------------------------------------------------------------------------[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (12): Phylum, Class, Order, Family, Species, FitnessComponent, FitnessClassification, MRmeasurement, LabField, p, R...
+[32mdbl[39m (12): MR.Temp, Mean.MR, Mean.Body.mass, n.rep, r, r.sig, r.nonsig, sig, zr, Year, Ref, JournalIF
+"
+"1","
+[36mi[39m Use `spec()` to retrieve the full column specification for this data.
+[36mi[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","# Exclude some NA's in sample size and r"
+"0","arnold_data <- arnold_data[complete.cases(arnold_data$n.rep) & complete.cases(arnold_data$r),] #""ADD YOUR CODE HERE"""
+"0",""
+"0","# Calculate the effect size, ZCOR"
+"0","arnold_data <- metafor::escalc(measure = ""ZCOR"", ri = r, ni = n.rep, data = arnold_data, var.names = c(""Zr"", ""Zr_v"")) #""ADD YOUR CODE HERE"""
+"0",""
+"0","# Lets subset to endotherms "
+"0","arnold_data_endo <- arnold_data %>% "
+"0","               mutate(endos = ifelse(Class %in% c(""Mammalia"", ""Aves""), ""endo"", ""ecto"")) %>% "
+"0","               filter(endos == ""endo"" & Zr <= 3) # Note that one sample that was an extreme outlier was removed in the paper."
+"0",""
+"0","# Add in observation-level (residual) column. This column simply counts, from 1 to the number of rows"
+"0","arnold_data_endo$residual <- 1:dim(arnold_data_endo)[1] #""ADD YOUR CODE HERE"""

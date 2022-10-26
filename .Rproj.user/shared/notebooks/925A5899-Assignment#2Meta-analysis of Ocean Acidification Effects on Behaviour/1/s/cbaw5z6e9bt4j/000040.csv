@@ -1,0 +1,19 @@
+"0","# Load data file from the data folder"
+"0","matadata <- read_csv(""./data/clark_paper_data.csv"")"
+"1","[1mRows: [22m[34m1[39m [1mColumns: [22m[34m15[39m
+"
+"1","[36m--[39m [1mColumn specification[22m [36m---------------------------------------------------------------------------------------------------[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (9): Study, Authors, Title, Journal, Effect type, Climate (FishBase), Env cue/stimulus?, Behavioural metric, Life s...
+[32mdbl[39m (5): Year (online), Year (print), Pub year IF, 2017 IF, Average n
+[33mlgl[39m (1): Cue/stimulus type
+"
+"1","
+[36mi[39m Use `spec()` to retrieve the full column specification for this data.
+[36mi[39m Specify the column types or set `show_col_types = FALSE` to quiet this message.
+"
+"0","wider <- pivot_wider(fdata,names_from = treatment, values_from = c(n,activity_avg,activity_sd))"
+"0","names(wider) <- c(""Species"",""oa.n"",""ctrl.n"",""oa.mean"",""ctrl.mean"",""oa.sd"",""ctrl.sd"")"
+"0","matadatarep <- matadata[rep(seq_len(nrow(matadata)),each=6),]"
+"0","meta_clark <- bind_cols(matadatarep,wider)"
+"0","meta_clark"
