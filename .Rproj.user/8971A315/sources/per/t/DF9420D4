@@ -1,25 +1,26 @@
 {
-    "id": "4BEFD6EF",
-    "path": "D:/Downloads/meta-analysis_biases_solutions (1).Rmd",
+    "id": "DF9420D4",
+    "path": "~/GitHub/Version-Control-Git-and-GitHub/git_fishes_student.Rmd",
     "project_path": null,
     "type": "r_markdown",
-    "hash": "2688083543",
+    "hash": "1971479117",
     "contents": "",
     "dirty": false,
-    "created": 1666684851144.0,
+    "created": 1666696859186.0,
     "source_on_save": false,
-    "relative_order": 2,
+    "relative_order": 6,
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "last_setup_crc32": "97130198b4bb4260"
+        "cursorPosition": "42,0",
+        "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1666684846,
+    "lastKnownWriteTime": 1662650396,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1666745428178,
+    "last_content_update": 1662650396,
     "read_only": false,
     "read_only_alternatives": []
 }

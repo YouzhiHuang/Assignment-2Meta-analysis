@@ -69,16 +69,16 @@ ft <-  fdata%>%
   merge_v(j = c("treatment","species")) %>%
   theme_booktabs(bold_header = TRUE)  %>% 
   valign(j = 1, valign = "top") %>%
-  colformat_double(digits = 2)%>%
   align(align = "center", part = "all", j = 4:5)%>%
+  colformat_double(digits = 2)  %>%
+  autofit()   %>%
   footnote(i = 2, j = grep("avg", colnames(fdata), value = TRUE), 
            part = "header",
            ref_symbols = " ",
             value = as_paragraph("avg: Arithmetic Mean")) %>% 
   footnote(i = 2, j = grep("sd", colnames(fdata), value = TRUE), 
            part = "header",
-           ref_symbols = " ", value = as_paragraph("sd: Standard Deviation"))%>%
-  autofit() 
+           ref_symbols = " ", value = as_paragraph("sd: Standard Deviation"))
 ft 
 ```
 
@@ -99,11 +99,20 @@ meta_clark
 
 ```{r}
 ocean_matadata <- read_csv("./data/ocean_meta_data.csv")
-ocean_mata_data <- merge(x = ocean_matadata, y = meta_clark, all = TRUE)
-ocean_mata_data
+oceanmatadata <- merge(x = ocean_matadata, y = meta_clark, all = TRUE)
+oceanmatadata
 ```
 
+## analyse
 
+### calculate the log response ratio (lnRR) effect size for every row
+
+```{r}
+cleanoceanmatadata <- oceanmatadata[complete.cases(oceanmatadata$ctrl.mean) & complete.cases(oceanmatadata$oa.mean)& complete.cases(oceanmatadata$ctrl.sd)& complete.cases(oceanmatadata$oa.sd)& complete.cases(oceanmatadata$ctrl.n)& complete.cases(oceanmatadata$oa.n),]
+
+InRRdata <-  metafor::escalc(measure="ROM", m1i=ctrl.mean,  m2i=oa.mean, sd1i=ctrl.sd, sd2i=oa.sd, n1i=ctrl.n, n2i=oa.n, data=cleanoceanmatadata)
+
+```
 
 
 

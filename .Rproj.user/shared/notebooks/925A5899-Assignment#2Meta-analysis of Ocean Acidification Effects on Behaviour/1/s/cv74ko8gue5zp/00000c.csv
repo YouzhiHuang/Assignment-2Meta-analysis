@@ -1,0 +1,5 @@
+"0","cleanoceanmatadata <- oceanmatadata %>% drop_na()"
+"0","InRRdata <-  metafor::escalc(measure=""ROM"", m1i=ctrl.mean,  m2i=oa.mean, sd1i=ctrl.sd, sd2i=oa.sd, n1i=ctrl.n, n2i=oa.n, data=cleanoceanmatadata)"
+"2","Warning in log(m1i/m2i) :"
+"2"," 产生了NaNs
+"
