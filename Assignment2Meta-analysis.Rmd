@@ -326,7 +326,7 @@ r2_time1
 
 ```{r}
 # Including sampling variance and year as moderators to account for both!
-metareg_time2 <- rma.mv(absInRR ~ Year_online + V_lnRR,  V = V_lnRR,random = list(~1 |Study, ~1 | Observation),
+metareg_time2 <- rma.mv(abslnRR ~ Year_online + V_lnRR,  V = V_lnRR,random = list(~1 |Study, ~1 | Observation),
     test = "t", dfs = "contain", data = InRRdata)
 summary(metareg_time2)
 r2_time2 <- orchaRd::r2_ml(metareg_time2)  #'ADD YOUR CODE HERE'
@@ -339,7 +339,7 @@ InRRdata <- InRRdata %>%
     mutate(Year_c = Year_online - mean(Year_online))  # 'ADD YOUR CODE HERE'
 # Including sampling variance and mean centered year as moderators to account
 # for both!
-metareg_time_c <- rma.mv(absInRR ~ Year_c + V_lnRR,  V = V_lnRR,random = list(~1 |Study, ~1 | Observation),
+metareg_time_c <- rma.mv(abslnRR ~ Year_c + V_lnRR,  V = V_lnRR,random = list(~1 |Study, ~1 | Observation),
     test = "t", dfs = "contain", data = InRRdata)
 summary(metareg_time_c)  # 'ADD YOUR CODE HERE'
 
