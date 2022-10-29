@@ -1,5 +1,5 @@
 ---
-title: Assignment2Meta-analysis
+title: Assignment2Metaanalysis
 date: "2022/10/25"
 output:
  bookdown::html_document2:

@@ -1,5 +1,6 @@
 ---
-title: Assignment2Meta-analysis
+title: Assignment #2: Meta-analysis of Ocean Acidification Effects on Behaviour.
+author: "u7457916 Youzhi Huang"
 date: "2022/10/25"
 output:
  bookdown::html_document2:
