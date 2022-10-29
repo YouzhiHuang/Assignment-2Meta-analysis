@@ -1,5 +1,6 @@
 ---
-title: Assignment2Metaanalysis
+title: "Assignment #2: Meta Analysis"
+author: "u7457916 Youzhi Huang"
 date: "2022/10/25"
 output:
  bookdown::html_document2:
@@ -14,26 +15,32 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-[My GitHub Repository](https://github.com/YouzhiHuang/Assignment-2Meta-analysis-of-Ocean-Acidification-Effects-on-Behaviour)
+This is [My GitHub Repository](https://github.com/YouzhiHuang/Assignment-2Meta-analysis-of-Ocean-Acidification-Effects-on-Behaviour)
 
 ## **Load the necessary R Packages**
 
 ```{r loadpacks, message=FALSE, results='hide'}
 # Install a load of packages that we'll use.
 library(pacman)
-p_load(bookdown, devtools, tidyverse, ggforce, GGally, flextable, latex2exp, png, magick, metafor, MASS, emmeans, R.rsp)
+p_load(bookdown, devtools, tidyverse, ggforce, GGally, flextable, latex2exp, png, magick, metafor, MASS, emmeans, R.rsp,viridis,patchwork)
 # Install the orchaRd package 
 # devtools::install_github("daniel1noble/orchaRd", force = TRUE)
 library(orchaRd)
-library(viridis)
-library(patchwork)
-```
-## Analysis of[Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) for each of the fish species’ `average activity` for each treatment.
 
-```{r}
+```
+## Add the article by [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) to the Meta-analysis dataset
+
+### **Analysis of[Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) for each of the fish species’ `average activity` for each treatment.**
+
+First, we load the data and clean it
+```{r datalaod,message=FALSE}
 # Load data file from the data folder
 path <- "./data/OA_activitydat_20190302_BIOL3207.csv"
 data <- read_csv(path)
+
+```
+
+```{r Data wrangling}
 # Code to removing missing data 
 comp_data <-  data %>% drop_na()
 # Drop irrelevant columns
@@ -41,6 +48,12 @@ Sp_Tr <- comp_data %>% dplyr::select(-c(...1,comment,loc,animal_id,sl,size))
 # Check spelling in species and treatment but also generate a summary table
 unique(Sp_Tr$species)
 unique(Sp_Tr$treatment)
+
+```
+
+Well, the data is good. Next we statistically analyse this data by [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y).
+
+```{r Calculate and visualise statistics}
 # Use flextable to render the summary table in a tidy format
 use_df_printer()
 set_flextable_defaults(
@@ -83,63 +96,93 @@ ft <-  fdata%>%
 ft 
 ```
 
-## Merge the summary statistics generated from 1) with the metadata
+So, we have generated the summary statistics (means, SD, N) for each of the fish species’ average activity for each treatment.  
+We next merge these statistics from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form used for meta-analysis.  
 
-```{r}
+### Merge the summary statistics generated from from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) with the metadata
+
+```{r load metadata,message=FALSE}
 # Load data file from the data folder
 matadata <- read_csv("./data/clark_paper_data.csv")
+
+```
+
+Collation of data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form ready for Meta-analysis 
+```{r clarkdata wrangling}
+# Turn and statistics into wide data for merging
 wider <- pivot_wider(fdata,names_from = treatment, values_from = c(n,activity_avg,activity_sd))
 names(wider) <- c("Species","oa.n","ctrl.n","oa.mean","ctrl.mean","oa.sd","ctrl.sd")
+# Repeat metadata to accommodate statistics
 matadatarep <- matadata[rep(seq_len(nrow(matadata)),each=6),]
+# Merge them and look at the result
 meta_clark <- bind_cols(matadatarep,wider)
 meta_clark
 ```
 
+Great, we have converted the data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form ready for meta-analysis.    
+Next, we merge the collated data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) with the larger set of metadata.
 
-## merge metadata from larger meta-analysis datase
+### Merge metadata from larger meta-analysis datase
 
-```{r}
+```{r load ocean metadata,message=FALSE}
 ocean_matadata <- read_csv("./data/ocean_meta_data.csv")
-oceanmatadata <- merge(x = ocean_matadata, y = meta_clark, all = TRUE)
+```
 
+```{r Merge two metadata}
+oceanmatadata <- merge(x = ocean_matadata, y = meta_clark, all = TRUE)
+oceanmatadata
+```
+
+Combining the data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a larger meta-dataset form [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511) gives us the full dataset available for meta-analysis.
+But don't forget to collate the data before analysis for the subsequent Meta-analysis.
+
+```{r metadata wrangling-name}
 # Rebuild the variable name avoiding spaces 
 names(oceanmatadata)[3:4] <- c("Year_online","Year_print")
 names(oceanmatadata)[7:10] <- c("Pub_year_IF","2017_IF","Average_n","Effect_type")
 names(oceanmatadata)[12:16] <- c("Climate_FishBase","Env_cue/stimulus?","Cue/stimulus_type","Behavioural_metric","Life_stage")
-
-
-# check
+# check spell
 unique(sort(oceanmatadata$Species))
+```
 
+We can find that the species nomenclature of [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) differs from that of [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511). By reviewing [the original literature](https://doi.org/10.1038/s41586-019-1903-y) of Clark et al. we were able to unify their species nomenclature into a binomial approach consistent with [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511).
+
+```{r metadata wrangling-spell}
 oceanmatadata$Species[oceanmatadata$Species == "acantho"] <- "Acanthochromis polyacanthus"
 oceanmatadata$Species[oceanmatadata$Species == "ambon"] <- "Pomacentrus amboinensis"
 oceanmatadata$Species[oceanmatadata$Species == "chromis"] <- "Chromis atripectoralis"
 oceanmatadata$Species[oceanmatadata$Species == "humbug"] <- "Dascyllus aruanus"
 oceanmatadata$Species[oceanmatadata$Species == "lemon"] <- "Pomacentrus moluccensis"
 oceanmatadata$Species[oceanmatadata$Species == "whitedams"] <- "Dischistodus perspicillatus"
-
-
-unique(sort(oceanmatadata$Species))
-unique(sort(oceanmatadata$Life_stage))
-
-
-
+summary(oceanmatadata)
 ```
 
-## analyse
+We can roughly see that there are no more unusual elements in the metadata set. So we can now perform a meta-analysis on this merged metadata.
+
+## A meta-analysis of ocean acidification metadata sets
+
+First, we have to calculate the effect size(log response ratio, lnRR) we used for the meta-analysis.  
 
 ### 4.calculate the log response ratio (lnRR) effect size for every row
 
-```{r}
+lnRR is defined as
+$$
+lnRR = ln \left( \frac{M_E}{M_C}\right)
+$$
+where $$M_E$$ and $$M_C$$  are the average measured response in the experimental and control treatments, respectively. 
+So in order to calculate lnRR, we have to first filter the NA values and calculate the resulting NaN values.
+```{r lnRRfilter}
 # Exclude some NA's in sample size and r
 cleanoceanmatadata <- oceanmatadata[complete.cases(oceanmatadata$ctrl.mean) & complete.cases(oceanmatadata$oa.mean)& complete.cases(oceanmatadata$ctrl.sd)& complete.cases(oceanmatadata$oa.sd)& complete.cases(oceanmatadata$ctrl.n)& complete.cases(oceanmatadata$oa.n),]
-
 cleanInRRdata <- cleanoceanmatadata %>% filter(oa.mean/ctrl.mean >=0)
+```
 
+Calculate lnRR and the absolute value of lnRR that may be used later. And add them to our meta dataset.
+
+```{r lnRRcalculated}
 InRRdata <-  metafor::escalc(measure="ROM", m1i=oa.mean,  m2i=ctrl.mean, sd1i=oa.sd, sd2i=ctrl.sd, n1i=oa.n, n2i=ctrl.n, data=cleanInRRdata,var.names = c("lnRR", "V_lnRR"))
-
+InRRdata$abslnRR <- abs(InRRdata$lnRR)
 InRRdata
-
 ```
 
 ### meta-analytic model fitted to the data
