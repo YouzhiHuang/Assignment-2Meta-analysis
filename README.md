@@ -1,5 +1,5 @@
 # Assignment-2Meta-analysis-of-Ocean-Acidification-Effects-on-Behaviour
-# **The goal of this assignment is to conduct a meta-analysis on ocean acidification effects on behaviour**
+**The goal of this assignment is to conduct a meta-analysis on ocean acidification effects on behaviour**
 ## **Load the necessary R Packages**
 
 ## **Add the article by [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) to the Meta-analysis dataset**
