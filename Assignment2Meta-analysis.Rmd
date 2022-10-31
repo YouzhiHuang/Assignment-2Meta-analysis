@@ -9,9 +9,6 @@ output:
     toc: yes
     toc_depth: 6
     toc_float: yes
-editor_options: 
-  markdown: 
-    wrap: sentence
 ---
 
 ```{r setup, include=FALSE}
@@ -143,11 +140,14 @@ oceanmatadata
 Combining the data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a larger meta-dataset form [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511) gives us the full dataset available for meta-analysis.
 But don't forget to collate the data before analysis for the subsequent Meta-analysis.
 
-```{r metadata wrangling-name}
+```{r metadata wrangling-name,warning=FALSE}
 # Rebuild the variable name avoiding spaces 
 names(oceanmatadata)[3:4] <- c("Year_online","Year_print")
-names(oceanmatadata)[7:10] <- c("Pub_year_IF","2017_IF","Average_n","Effect_type")
+names(oceanmatadata)[7:10] <- c("Pub_year_IF","IF_2017","Average_n","Effect_type")
 names(oceanmatadata)[12:16] <- c("Climate_FishBase","Env_cue/stimulus?","Cue/stimulus_type","Behavioural_metric","Life_stage")
+# Correct all the variables type
+oceanmatadata$Pub_year_IF <- as.numeric(oceanmatadata$Pub_year_IF)
+oceanmatadata$IF_2017 <- as.numeric(oceanmatadata$IF_2017)
 # check spell
 unique(sort(oceanmatadata$Species))
 ```
@@ -293,7 +293,7 @@ We have added the results of a tanh transformation to the effect size magnitude 
 We present each of the important results from the previous meta-analysis in a forest plot (orchard plot) in Figure \@ref(fig:fig1) : we show that across 92 studies, sample 801 (k), the horizontal axis represents the effect size (lnRR), the vertical axis represents the intercept i.e. the overall mean estimate of `r  round(MLMA$b,3)`, the 95% confidence interval is `r round(MLMA$ci.lb,3)` to `r round(MLMA$ci.ub,3)`, the 95% prediction interval is `r round(predict(MLMA)[[5]],3)` to `r round(predict(MLMA)[[6]],3)`, and the overall index of heterogeneity ($I^{2}=100\%$. The effect sizes are scaled by the precision of each effect size value, i.e. $\frac1{\sqrt{V_{lnRR}}}$. We also plotted the Figure \@ref(fig:fig2) caterpillar plots to show the CI for each effect size .We can see from the sparse middle of the graph and the dense top and bottom that when the effect size is around 0 the 95% confidence interval is small and the abnormal effect size tends to exhibit a large 95% confidence interval.
 This may be due to the small sample size.
 
-From Figures \@ref(fig:fig1) and \@ref(fig:fig2), the overall estimates from the random effects meta-analysis of 801 effect sizes are centred on zero, with both the 95% confidence interval and the 95% prediction interval for the effect size crossing the no-effect line.
+From Figures \@ref(fig:fig1) and \@ref(fig:fig2), the overall estimates from the random effects meta-analysis of 801 effect sizes are centred on zero, with both the 95% confidence interval and the 95% prediction interval for the effect size crossing the no-effect line. Therefore, we can estimate that the effect size of the overall effect of ocean acidification on fish behaviour tends to be close to zero and is prevalent in studies that have conducted similar experiments on the effects of ocean acidification on fish behaviour.
 
 ## **Publication biases in meta-analyses of ocean acidification metadata sets**
 
@@ -309,7 +309,15 @@ funnel1 <- metafor::funnel(x = nInRRdata$lnRR, vi = nInRRdata$V_lnRR, yaxis="vi"
 The horizontal axis of Figure \@ref(fig:fig3) represents the effect size (log response ratio, lnRR) and the vertical axis represents the sampling variance (V_lnRR).
 The theoretical pseudo-confidence region's are shown with multiple p-values, showing the p-values corresponding to the different studies (black dots).
 
-```{r fig4,fig.cap="Funnel plot of ocean acidification metadata sets with colour",message=FALSE}
+```{r fig4,fig.cap="Contour-enhanced funnel plot of ocean acidification metadata sets(Partial zoom)" }
+# Lets make a funnel plot to visualize the data in relation to the precision. Note that one sample that was an extreme outlier was removed in the paper
+metafor::funnel(x = nInRRdata$lnRR, vi = nInRRdata$V_lnRR, yaxis="seinv",
+    digits = 2, level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray 75"),las = 1,ylim = c(0.001, 25),xlim = c(-4, 4), xlab = "Effect size magitude (lnRR)", legend = TRUE)
+```
+We can zoom in locally around point 0 to show more detail to assess the distribution. The horizontal axis of the graph @ref(fig:fig4) represents the effect size (log response ratio, lnRR) and the vertical axis represents the precision (1/SE).
+The theoretical pseudo-confidence region's show multiple P-values, showing the P-values corresponding to the different studies (black dots).
+
+```{r fig5,fig.cap="Funnel plot of ocean acidification metadata sets with colour",message=FALSE}
 funnel<- ggplot(nInRRdata,aes(x = lnRR, y= V_lnRR, color=Study))+
   geom_point(size=1.2,alpha=0.6)+ 
   scale_color_viridis(discrete=TRUE)+ 
@@ -326,7 +334,7 @@ funnel<- ggplot(nInRRdata,aes(x = lnRR, y= V_lnRR, color=Study))+
 funnel
 ```
 
-In Figure \@ref(fig:fig4), the horizontal axis represents the effect size (log response ratio, lnRR) and the vertical axis the sampling variance (V_lnRR).
+In Figure \@ref(fig:fig5), the horizontal axis represents the effect size (log response ratio, lnRR) and the vertical axis the sampling variance (V_lnRR).
 Different studies are shown in different colours, with the red line representing the no-effect size.
 Many extremes of effect sizes are shown.
 
@@ -339,9 +347,9 @@ r2 <- orchaRd::r2_ml(metareg_v)
 r2
 ```
 
-### 8. Time-lag plot assessing how effect sizes may or may not have changed through time.
+### 8. Time-lag plot assessing how effect sizes have changed through time.
 
-```{r fig5,fig.cap="Time-lag plot of ocean acidification metadata sets",message=FALSE}
+```{r fig6,fig.cap="Time-lag plot of ocean acidification metadata sets",message=FALSE}
 Time_lag <- ggplot(InRRdata, aes(y = lnRR, x = Year_online, size=((InRRdata$Average_n)^5)*0.06)) + 
     geom_smooth(aes(alpha=0.05),method = "loess",se=TRUE, fullrange=TRUE, level=0.95, color="black",show.legend = F)+
    geom_point(aes(color= InRRdata$Study), show.legend = F) +
@@ -354,7 +362,7 @@ scale_x_continuous(breaks = round(seq(min(InRRdata$Year_online), max(InRRdata$Ye
 Time_lag
 ```
 
-In Figure \@ref(fig:fig5), the horizontal axis shows when the study was published online (Year) and the vertical axis shows the effect size (log response ratio, lnRR).
+In Figure \@ref(fig:fig6), the horizontal axis shows when the study was published online (Year) and the vertical axis shows the effect size (log response ratio, lnRR).
 Different studies are represented by different colours and the precision of the study (mean sample size, N) is represented by different sizes, with the red line representing the no-effect size.
 The curve fits the average effect size for each year.
 
@@ -404,16 +412,16 @@ r2_timec
 ### 11. Discussion of the possibility of publication bias based on meta-regression results
 
 Although there is no blank area in the bottom right corner of Figure \@ref(fig:fig3), this may be due to the high precision (small sampling variance) of all these studies.
-The distribution of effect sizes in the funnel plot visualization in Figure \@ref(fig:fig3) and Figure \@ref(fig:fig4) is still relatively symmetrical funnel-shaped distribution, with no significant asymmetric publication bias.
+The distribution of effect sizes in the funnel plot visualization in Figure \@ref(fig:fig4) and Figure \@ref(fig:fig5) is still relatively symmetrical funnel-shaped distribution, with no significant asymmetric publication bias.
 This can also be supported by the results of the fit test through the meta-analysis model (p=`r metareg_v$pval[2]`, CI=`r metareg_v$ci.lb[2]`\~ `r metareg_v$ci.ub[2]`).
 However, in Figure \@ref(fig:fig3), we found high precision (small variance) in all of these experiments, which should have been concentrated at the top in a more concentrated area, but instead found that the difference in effect size was about the same as at the bottom, and that no significant spread occurred as it should have.
-It would be expected that as the sampling variance increases, the spread of effect sizes should increase, but in the funnel plot visualisation in Figure \@ref(fig:fig3) Figure \@ref(fig:fig4) there is no significant spread of effect sizes, instead effect sizes spread significantly even when the variance is small.
+It would be expected that as the sampling variance increases, the spread of effect sizes should increase, but in the funnel plot visualisation in Figure \@ref(fig:fig3) Figure \@ref(fig:fig5) there is no significant spread of effect sizes, instead effect sizes spread significantly even when the variance is small.
 That is, the effect size does not gradually fix as the sample size increases and the sampling variance decreases.
 This indicates that this effect size does not exist stably and may not be present.\
 Not only that, but we find in Figure \@ref(fig:fig3) that the studies with significant differences found in the contour-enhanced funnel plots tend to have very large effect sizes, and there is a clear selection bias for publication, i.e. a large number of non-significant results are not published (large number of missing studies in blank areas).
-In Figure \@ref(fig:fig4) we find a number of studies with extremely extreme effect sizes and variances.
+In Figure \@ref(fig:fig5) we find a number of studies with extremely extreme effect sizes and variances.
 
-In Figure \@ref(fig:fig5), which visualises the mean effect size with year of publication, we find an extremely significant time lag bias.
+In Figure \@ref(fig:fig6), which visualises the mean effect size with year of publication, we find an extremely significant time lag bias.
 There does appear to be a significant negative correlation between mean effect size and year.
 The initial studies had extremely extreme mean effect sizes, but as subsequent studies continued, the effect sizes converged to reasonable levels.\
 It is also noteworthy that the earlier studies had smaller sample sizes (i.e. lower precision).
