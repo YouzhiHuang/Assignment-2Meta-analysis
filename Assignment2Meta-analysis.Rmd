@@ -369,16 +369,20 @@ metareg_time <- rma.mv(lnRR ~ Year_online, V = V_lnRR, random = list(~1 |Study, 
 summary(metareg_time)
 ```
 
-```{r tab2,tab.cap="Time variation drives the change in effect size by"}
+```{r tab2, tab.cap="Percentage of variance in effect size"}
 # time variation explain results were published in lnRR
 r2_time <- orchaRd::r2_ml(metareg_time) 
-r2_time
+# Make a pretty table. First, lets clean up the names of the different I2 estimates. Lets remove I2_. It's a string, so, we can use some regular expressions to fix that. `gsub` is pretty useful. You put a pattern in and tell it what you would like to replace the text with. In this case, just blank will do! Then, we'll make the first letter of what is left capitalised.
+r2_tim <- tibble(type = firstup(gsub("Percentage of variance in effect size", "", names(r2_time))),  Percentage= r2_time)
+# Now, lets make a pretty table. We can so some nice modifications here too.
+flextable(r2_tim) %>%
+    align(part = "header", align = "center")
 ```
 
 ### 10. Formal meta-regression model that includes inverse sampling variance (i.e., 1/VlnRR) to test for file-drawer biases
 
 ```{r,warning=FALSE}
-# Including sampling variance as moderators to account for both!
+# Including sampling variance as moderators
 metareg_time2 <- rma.mv(lnRR ~ 1/V_lnRR ,  V = V_lnRR,random = list(~1 |Study, ~1 | Observation),
     test = "t", dfs = "contain", data = InRRdata)
 summary(metareg_time2)
