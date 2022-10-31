@@ -1,5 +1,27 @@
 # Assignment-2Meta-analysis-of-Ocean-Acidification-Effects-on-Behaviour
 **The goal of this assignment is to conduct a meta-analysis on ocean acidification effects on behaviour**
+
+
+# DATA files
+
+### 1.OA_activitydat_20190302_BIOL3207.csv
+#### Raw data form [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y)
+loc Location, and year, where the data were collected. AIMS = Australian Institute of Marine Science; LIRS = Lizard Island Research Station species Species name: acantho = Acanthochromis; Ambon = Pomacentrus amboinensis; Chromis = Chromis atripectoralis; Humbug = Dascyllus aruanus; Lemon = Pomacentrus moluccensis treatment Elevated CO2 [CO2] (850-1,050 µatm) or control [Control] (400 - 450 µatm) groups animal_id Fish identity sl Standard length of the fish in mm size Size grouping of the fish, separated at 15 mm standard length into 'big' or 'small' activity Number of seconds the fish was active per minute, averaged across the duration of the trial comment Comment with notes on the origin of the data
+### 2.clark_paper_data.csv
+#### Meta-analysis format description of raw data form [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y)
+### 3. ocean_meta_data.csv
+#### Meta data from [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511)
+
+# SCRIPT files
+
+### 1.Assignment2Meta-analysis.Rmd
+Annotated R markdown document with meta-analysis of the above data.
+
+### 2.Assignment2Meta-analysis.html
+The final report after rendering from the above R markdown document.
+
+# Meta-analysis workflow
+
 ## **Load the necessary R Packages**
 
 ## **Add the article by [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) to the Meta-analysis dataset**
