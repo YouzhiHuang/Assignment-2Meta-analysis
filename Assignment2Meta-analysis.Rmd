@@ -1,5 +1,5 @@
 ---
-title: "Assignment #2: Meta Analysis"
+title: "Assignment #2: Meta-analysis of Ocean Acidification Effects on Behaviour"
 author: "u7457916 Youzhi Huang"
 date: "2022/10/25"
 output:
@@ -9,6 +9,9 @@ output:
     toc: yes
     toc_depth: 6
     toc_float: yes
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
 
 ```{r setup, include=FALSE}
@@ -31,9 +34,10 @@ library(orchaRd)
 
 ## **Add the article by [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) to the Meta-analysis dataset**
 
-### 1. Analysis of [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) for each of the fish species’ `average activity` for each treatment.
+### 1. Analysis of [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) for each of the fish species' `average activity` for each treatment.
 
 First, we load the data and clean it
+
 ```{r datalaod,message=FALSE}
 # Load data file from the data folder
 path <- "./data/OA_activitydat_20190302_BIOL3207.csv"
@@ -52,7 +56,8 @@ unique(Sp_Tr$treatment)
 
 ```
 
-Well, the data is good without problems. Next we statistically analyse this data by [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y).
+Well, the data is good without problems.
+Next we statistically analyse this data by [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y).
 
 ```{r Calculate and visualise statistics}
 # Use flextable to render the summary table in a tidy format
@@ -97,8 +102,8 @@ ft <-  fdata%>%
 ft 
 ```
 
-So, we have generated the summary statistics (means, SD, N) for each of the fish species’ average activity for each treatment.  
-We next merge these statistics from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form used for meta-analysis.  
+So, we have generated the summary statistics (means, SD, N) for each of the fish species' average activity for each treatment.\
+We next merge these statistics from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form used for meta-analysis.
 
 ### 2. Merge the summary statistics generated from from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) with the metadata
 
@@ -108,7 +113,8 @@ matadata <- read_csv("./data/clark_paper_data.csv")
 
 ```
 
-Collation of data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form ready for Meta-analysis 
+Collation of data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form ready for Meta-analysis
+
 ```{r clarkdata wrangling}
 # Turn and statistics into wide data for merging
 wider <- pivot_wider(fdata,names_from = treatment, values_from = c(n,activity_avg,activity_sd))
@@ -120,7 +126,7 @@ meta_clark <- bind_cols(matadatarep,wider)
 meta_clark
 ```
 
-Great, we have converted the data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form ready for meta-analysis.    
+Great, we have converted the data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) into a form ready for meta-analysis.\
 Next, we merge the collated data from [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) with the larger set of metadata.
 
 ### 3. Merge metadata from larger meta-analysis datase
@@ -146,7 +152,8 @@ names(oceanmatadata)[12:16] <- c("Climate_FishBase","Env_cue/stimulus?","Cue/sti
 unique(sort(oceanmatadata$Species))
 ```
 
-We can find that the species nomenclature of [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) differs from that of [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511). By reviewing [the original literature](https://doi.org/10.1038/s41586-019-1903-y) of Clark et al. we were able to unify their species nomenclature into a binomial approach consistent with [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511).
+We can find that the species nomenclature of [Clark et al. (2020)](https://doi.org/10.1038/s41586-019-1903-y) differs from that of [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511).
+By reviewing [the original literature](https://doi.org/10.1038/s41586-019-1903-y) of Clark et al. we were able to unify their species nomenclature into a binomial approach consistent with [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511).
 
 ```{r metadata wrangling-spell}
 oceanmatadata$Species[oceanmatadata$Species == "acantho"] <- "Acanthochromis polyacanthus"
@@ -158,20 +165,23 @@ oceanmatadata$Species[oceanmatadata$Species == "whitedams"] <- "Dischistodus per
 summary(oceanmatadata)
 ```
 
-We can roughly see that there are no more unusual elements in the metadata set. So we can now perform a meta-analysis on this merged metadata.
+We can roughly see that there are unusual elements in the metadata set.
+So we can go back to the original literature to check the origin of these anomalous data.
+But we find that this data is correct, so we can leave it until a subsequent problem arises.
+This merged metadata can now be meta-analysed.
+So we can now perform a meta-analysis on this merged metadata.
 
 ## **Meta-analytical model for ocean acidification metadata sets**
 
-First, we have to calculate the effect size(log response ratio, lnRR) we used for the meta-analysis.  
+First, we have to calculate the effect size(log response ratio, lnRR) we used for the meta-analysis.
 
 ### 4. Calculate the log response ratio (lnRR) effect size for every row
 
-lnRR is defined as
-$$
+lnRR is defined as $$
 lnRR = ln \left( \frac{M_E}{M_C}\right)
-$$
-where $M_E$ and $M_C$  are the average measured response in the experimental and control treatments, respectively. 
-So in order to calculate lnRR, we have to first filter the NA values and calculate the resulting NaN values.
+$$ where $M_E$ and $M_C$ are the average measured response in the experimental and control treatments, respectively.
+So in order to calculate lnRR, we have to first filter the NA values and NaN values resulting from the calculation.
+
 ```{r lnRRfilter}
 # Exclude some NA's in sample size and r
 cleanoceanmatadata <- oceanmatadata[complete.cases(oceanmatadata$ctrl.mean) & complete.cases(oceanmatadata$oa.mean)& complete.cases(oceanmatadata$ctrl.sd)& complete.cases(oceanmatadata$oa.sd)& complete.cases(oceanmatadata$ctrl.n)& complete.cases(oceanmatadata$oa.n),]
@@ -186,17 +196,22 @@ InRRdata <-  metafor::escalc(measure="ROM", m1i=oa.mean,  m2i=ctrl.mean, sd1i=oa
 
 ### 5. Meta-analytic model fitted to the data
 
-Our data are now ready for analysis. A multilevel meta-analytic model including the random effects of the study and observations can be built first.    
-To estimate the variance of the random effects between the study (i.e. `Study`) and within-study (i.e. `Observation`) grouping variables, to control for non-independence and to understand the sources driving the variability in effect sizes. We had to create a new `Observation` variable not available in the original metadata set for estimating random effects at the observation/row level.
+Our data are now ready for analysis.
+A multilevel meta-analytic model including the random effects of the study and observations can be built first.\
+To estimate the variance of the random effects between the study (i.e. `Study`) and within-study (i.e. `Observation`) grouping variables, to control for non-independence and to understand the sources driving the variability in effect sizes.
+We had to create a new `Observation` variable not available in the original metadata set for estimating random effects at the observation/row level.
 
 ```{r 5.1,message=FALSE}
 # Create a new `Observation` variable
 InRRdata$Observation <- rep(1:nrow(InRRdata))
 ```
 
-Next we model the multilevel meta-analysis using `rma.mv` with the formula lnRR ~ 1. lnRR is our response variable and an 'intercept' is estimated which is the overall average estimate of lnRR, our effect size. t-test specifies the test statistic used. `Metafor` defaults to z-values based on the standard normal distribution, however, simulations show (Pappalardo et al. 2020) and recommend (Rosenberg 2013) using a t-distribution because sample sizes are typically small and estimates of true variance tests are used. 
+Next we model the multilevel meta-analysis using `rma.mv` with the formula lnRR \~ 1.
+lnRR is our response variable and an 'intercept' is estimated which is the overall average estimate of lnRR, our effect size.
+t-test specifies the test statistic used.
+`Metafor` defaults to z-values based on the standard normal distribution, however, simulations show ([Pappalardo et al. 2020](https://doi.org/10.1111/2041-210X.13445)) and recommend ([Rosenberg 2013](https://doi.org/10.23943/princeton/9780691137285.003.0009)) using a t-distribution because sample sizes are typically small and estimates of true variance tests are used.
 
-```{r 5.2,message=FALSE}
+```{r 5.2,message=FALSE,warning=FALSE}
 #Multi-level meta-analytic model
 MLMA <- metafor::rma.mv(lnRR  ~ 1, V = V_lnRR, method = "REML", random=list( ~1|Study,~1|Observation),test = "t",data=InRRdata)
 ```
@@ -204,18 +219,22 @@ MLMA <- metafor::rma.mv(lnRR  ~ 1, V = V_lnRR, method = "REML", random=list( ~1|
 ```{r}
 MLMA
 ```
- 
 
 ### 6. Results and discussion of the meta-analytical model
 
-#### Uncertainty in the overall meta-analysis mean: 95% confidence interval:
+#### Uncertainty in the overall meta-analysis mean: 95% confidence interval
 
-Based on the results of our multilevel meta-analysis model, a 95% confidence interval ranging from `r MLMA$ci.lb `to`r MLMA$ci.ub` can be obtained. In other words, at 95%, our point estimate expects the true mean to fall between the InRR values of `r MLMA$ci.lb `to`r MLMA$ci.ub`, which spans 0 point, suggesting that the expected lnRR effect value could be 0, i.e. that ocean acidification has no effect on fish behaviour. This does not reject the original hypothesis that lnRR equals 0. We can see this from the p-value > 0.05. More precisely, the p-value is `r MLMA$pval`,the overall meta-analytic mean estimate is`r MLMA$b`
+Based on the results of our multilevel meta-analysis model, a 95% confidence interval ranging from `r MLMA$ci.lb`to`r MLMA$ci.ub` can be obtained.
+In other words, at 95%, our point estimate expects the true mean to fall between the InRR values of `r MLMA$ci.lb`to`r MLMA$ci.ub`, which spans 0 point, suggesting that the expected lnRR effect value could be 0, i.e. that ocean acidification has no effect on fish behaviour.
+This does not reject the original hypothesis that lnRR equals 0.
+We can see this from the p-value \> 0.05.
+More precisely, the p-value is `r MLMA$pval`,the overall meta-analytic mean estimate is`r MLMA$b`
 
-#### Heterogeneity in effect size estimates across studies 
+#### Heterogeneity in effect size estimates across studies
 
-Because the meta-analysis mean estimates need to be interpreted in the context of how much variation in impact exists within studies (`Observations`) and between studies (`Studies`). Next we need report the variability measure also known as "heterogeneity".  
- 
+Because the meta-analysis mean estimates need to be interpreted in the context of how much variation in impact exists within studies (`Observations`) and between studies (`Studies`).
+Next we need report the variability measure also known as "heterogeneity".
+
 ```{r het,tab.cap = "Total effect size hetereogneity (Total), as well as the proportion of hetereogeneity in effects resulting from Study and Observation"}
 # Calculate I2
 i2_vals <- orchaRd::i2_ml(MLMA)
@@ -230,9 +249,9 @@ flextable(i2) %>%
 
 ```
 
-
-From Table \@ref(tab:het), we have that the sampling variation accounts for only `r 100 - round(i2_vals[1],3)` % of the total variation in effects, and we can see that this metadata set has this extremely heterogeneous effect size. From the meta-analytic model in Table 1, we find that the total change in effect size estimates has `r round(i2_vals[2],3)` % as a result of between-study variation and `r round(i2_vals[3],3)`% as a result of within-study variation.    
-We can use not only $I^2$ estimates but also prediction intervals to quantify heterogeneity.    
+From Table \@ref(tab:het), we have that the sampling variation accounts for only `r 100 - round(i2_vals[1],3)` % of the total variation in effects, and we can see that this metadata set has this extremely heterogeneous effect size.
+From the meta-analytic model in Table \@ref(tab:het), we find that the total change in effect size estimates has `r round(i2_vals[2],3)` % as a result of between-study variation and `r round(i2_vals[3],3)`% as a result of within-study/Observations variation.\
+We can use not only $I^2$ estimates but also prediction intervals to quantify heterogeneity.
 
 ```{r pis}
 # Calculate the prediction intervals
@@ -240,13 +259,14 @@ pis <- predict(MLMA)
 pis
 ```
 
-
-We can see that our 95% prediction intervals are wide. Effect sizes (Zr) are expected to range from `r predict(MLMA)[[5]]` to `r predict(MLMA)[[6]]` 95% of the time with repeated experiments, suggesting a lot of inconsistency between studies.  
+We can see that our 95% prediction intervals are wide.
+Effect sizes (lnRR) are expected to range from `r predict(MLMA)[[5]]` to `r predict(MLMA)[[6]]` 95% of the time with repeated experiments, suggesting a lot of inconsistency between studies.
+The fact that it crosses the 0 point suggests that if we were to repeat the experiment we might conclude that ocean acidification has no effect on fish activity.\
 Next, we can visualise the results of these meta-analyses via forest plots.
 
 #### Forest plot to capture meta-analysis model results.
 
-```{r fig1,fig.cap= "Forest plot of meta-analysis model results"}
+```{r fig1,fig.cap= "Forest plot of meta-analysis model results",warning=FALSE}
 # Make an orchard plot using the model object
 p1 <- orchaRd::orchard_plot(MLMA, group = "Study", data = InRRdata,
     xlab = "Effect size magnitude (lnRR)",transfm = "none",legend.pos= "none")+
@@ -260,23 +280,24 @@ p2 <- orchaRd::orchard_plot(MLMA, group = "Study", data = InRRdata,
   annotate(geom="text", x= 0.8, y= 0.5, label= paste0("Mean estimate = " ,round(MLMA$b,2)))
 p1/p2
 
-```                                                                                  
-       
+```
+
 ```{r fig2,fig.cap="Caterpillars plot of meta-analysis model results"}
 # a caterpillar plot (not a caterpillars plot)
 orchaRd::caterpillars(MLMA, group = "Study", data = InRRdata,
     xlab = "A tanh transformation to effect size magnitude (lnRR)",transfm = "tanh")
 ```
 
-In Figure \@ref(fig:fig1) the forest plot (orchard plot) and in Figure \@ref(fig:fig2) the caterpillar plot because there are quite a few extreme values in the meta dataset. We have added the results of a tanh transformation to the effect size magnitude (lnRR) to show more detail.  
-We present each of the important results from the previous meta-analysis in a forest plot (orchard plot) in Figure \@ref(fig:fig1) : we show that across 92 studies, sample 801 (k), the horizontal axis represents the effect size (lnRR), the vertical axis represents the intercept i.e. the overall mean estimate of `r  round(MLMA$b,3)`, the 95% confidence interval is `r round(MLMA$ci.lb,3)` to `r round(MLMA$ci.ub,3)`, the 95% prediction interval is `r round(predict(MLMA)[[5]],3)` to `r round(predict(MLMA)[[6]],3)`, and the overall index of heterogeneity ($I^{2}=100\%$. The effect sizes are scaled by the precision of each effect size value, i.e. $\frac1{\sqrt{V_{lnRR}}}$.
-We also plotted the Figure \@ref(fig:fig2) caterpillar plots to show the CI for each effect size.
+In Figure \@ref(fig:fig1) the forest plot (orchard plot) and in Figure \@ref(fig:fig2) the caterpillar plot because there are quite a few extreme values in the meta dataset.
+We have added the results of a tanh transformation to the effect size magnitude (lnRR) to show more detail.\
+We present each of the important results from the previous meta-analysis in a forest plot (orchard plot) in Figure \@ref(fig:fig1) : we show that across 92 studies, sample 801 (k), the horizontal axis represents the effect size (lnRR), the vertical axis represents the intercept i.e. the overall mean estimate of `r  round(MLMA$b,3)`, the 95% confidence interval is `r round(MLMA$ci.lb,3)` to `r round(MLMA$ci.ub,3)`, the 95% prediction interval is `r round(predict(MLMA)[[5]],3)` to `r round(predict(MLMA)[[6]],3)`, and the overall index of heterogeneity ($I^{2}=100\%$. The effect sizes are scaled by the precision of each effect size value, i.e. $\frac1{\sqrt{V_{lnRR}}}$. We also plotted the Figure \@ref(fig:fig2) caterpillar plots to show the CI for each effect size .We can see from the sparse middle of the graph and the dense top and bottom that when the effect size is around 0 the 95% confidence interval is small and the abnormal effect size tends to exhibit a large 95% confidence interval.
+This may be due to the small sample size.
 
-From Figures \@ref(fig:fig1) and \@ref(fig:fig2), the overall estimate for the random effects meta-analysis of 801 effect sizes is centred at zero, with 95% CI across the no-effect line. 
+From Figures \@ref(fig:fig1) and \@ref(fig:fig2), the overall estimates from the random effects meta-analysis of 801 effect sizes are centred on zero, with both the 95% confidence interval and the 95% prediction interval for the effect size crossing the no-effect line.
 
 ## **Publication biases in meta-analyses of ocean acidification metadata sets**
 
-### 7. Funnel plot for visually assessing the possibility of publication bias  
+### 7. Funnel plot for visually assessing the possibility of publication bias
 
 ```{r fig3,fig.cap="Contour-enhanced funnel plot of ocean acidification metadata sets" }
 # Lets make a funnel plot to visualize the data in relation to the precision. Note that one sample that was an extreme outlier was removed in the paper
@@ -285,10 +306,12 @@ funnel1 <- metafor::funnel(x = nInRRdata$lnRR, vi = nInRRdata$V_lnRR, yaxis="vi"
     digits = 2, level = c(0.1, 0.05, 0.01), shade = c("white", "gray55", "gray 75"),las = 1, xlab = "Effect size magitude (lnRR)", legend = TRUE)
 ```
 
+The horizontal axis of Figure \@ref(fig:fig3) represents the effect size (log response ratio, lnRR) and the vertical axis represents the sampling variance (V_lnRR).
+The theoretical pseudo-confidence region's are shown with multiple p-values, showing the p-values corresponding to the different studies (black dots).
 
-```{r fig4,fig.cap="Funnel plot of ocean acidification metadata sets with colour"}
+```{r fig4,fig.cap="Funnel plot of ocean acidification metadata sets with colour",message=FALSE}
 funnel<- ggplot(nInRRdata,aes(x = lnRR, y= V_lnRR, color=Study))+
-  geom_point(size=2,alpha=0.6)+ 
+  geom_point(size=1.2,alpha=0.6)+ 
   scale_color_viridis(discrete=TRUE)+ 
   xlab("Effect size magitude (lnRR)")+
   ylab("Variance(V_lnRR)")+
@@ -303,22 +326,25 @@ funnel<- ggplot(nInRRdata,aes(x = lnRR, y= V_lnRR, color=Study))+
 funnel
 ```
 
+In Figure \@ref(fig:fig4), the horizontal axis represents the effect size (log response ratio, lnRR) and the vertical axis the sampling variance (V_lnRR).
+Different studies are shown in different colours, with the red line representing the no-effect size.
+Many extremes of effect sizes are shown.
 
-```{r}
+```{r,warning=FALSE}
 # Including sampling variance as moderator
 metareg_v <- rma.mv(lnRR ~ V_lnRR, V = V_lnRR, random = list(~1 | Study, ~1 | Observation),
     test = "t", dfs = "contain", data = nInRRdata)
 summary(metareg_v)
 r2 <- orchaRd::r2_ml(metareg_v)
 r2
-
 ```
 
 ### 8. Time-lag plot assessing how effect sizes may or may not have changed through time.
-```{r fig5,fig.cap="Time-lag plot of ocean acidification metadata sets"}
-Time_lag <- ggplot(InRRdata, aes(y = lnRR, x = Year_online, size=InRRdata$Average_n*0.03)) + 
+
+```{r fig5,fig.cap="Time-lag plot of ocean acidification metadata sets",message=FALSE}
+Time_lag <- ggplot(InRRdata, aes(y = lnRR, x = Year_online, size=((InRRdata$Average_n)^5)*0.06)) + 
     geom_smooth(aes(alpha=0.05),method = "loess",se=TRUE, fullrange=TRUE, level=0.95, color="black",show.legend = F)+
-   geom_point(aes(color= Study), show.legend = F) +
+   geom_point(aes(color= InRRdata$Study), show.legend = F) +
   scale_color_viridis(discrete=TRUE)+ 
    geom_hline(yintercept =0,linetype="dashed",color="red")+
   labs(size = "Precision (N)")+
@@ -328,13 +354,15 @@ scale_x_continuous(breaks = round(seq(min(InRRdata$Year_online), max(InRRdata$Ye
 Time_lag
 ```
 
+In Figure \@ref(fig:fig5), the horizontal axis shows when the study was published online (Year) and the vertical axis shows the effect size (log response ratio, lnRR).
+Different studies are represented by different colours and the precision of the study (mean sample size, N) is represented by different sizes, with the red line representing the no-effect size.
+The curve fits the average effect size for each year.
 
 ### 9. Formal meta-regression model that includes year as a moderator (fixed effect) to test for time-lag bias
 
-```{r message=FALSE}
+```{r message=FALSE,warning=FALSE}
 # Including sampling variance as moderator
-metareg_time <- rma.mv(lnRR ~ Year_online, V = V_lnRR, random = list(~1 |Study, ~1 | Observation),
-    test = "t", dfs = "contain", data = nInRRdata)
+metareg_time <- rma.mv(lnRR ~ Year_online, V = V_lnRR, random = list(~1 |Study, ~1 | Observation),test = "t", dfs = "contain", data = InRRdata)
 ```
 
 ```{r}
@@ -342,60 +370,92 @@ summary(metareg_time)
 ```
 
 ```{r tab2,tab.cap="Time variation drives the change in effect size by"}
-# variation does time when results were published explain in lnRR
+# time variation explain results were published in lnRR
 r2_time <- orchaRd::r2_ml(metareg_time) 
-r2 <- tibble(r2_time)
-r2
+r2_time
 ```
 
-### 10 Formal meta-regression model that includes inverse sampling variance (i.e., 1vlnRR) to test for file-drawer biases  
+### 10. Formal meta-regression model that includes inverse sampling variance (i.e., 1/VlnRR) to test for file-drawer biases
 
-```{r}
-# Including sampling variance and year as moderators to account for both!
+```{r,warning=FALSE}
+# Including sampling variance as moderators to account for both!
 metareg_time2 <- rma.mv(lnRR ~ 1/V_lnRR ,  V = V_lnRR,random = list(~1 |Study, ~1 | Observation),
-    test = "t", dfs = "contain", data = nInRRdata)
+    test = "t", dfs = "contain", data = InRRdata)
 summary(metareg_time2)
 r2_time2 <- orchaRd::r2_ml(metareg_time2)
 r2_time2
 ```
 
-```{r}
-nInRRdata <- nInRRdata %>%
+```{r,warning=FALSE}
+# Including sampling variance and mean centered year as moderators to account for both
+InRRdata <- InRRdata %>%
     mutate(Year_c = Year_online - mean(Year_online))  
-# Including sampling variance and mean centered year as moderators to account
-# for both!
 metareg_time_c <- rma.mv(lnRR ~ Year_c + V_lnRR,  V = V_lnRR,random = list(~1 |Study, ~1 | Observation),
-    test = "t", dfs = "contain", data = nInRRdata)
+    test = "t", dfs = "contain", data = InRRdata)
 summary(metareg_time_c)  
-
+r2_timec <- orchaRd::r2_ml(metareg_time_c)
+r2_timec
 ```
 
-### 11 Discussion of the possibility of publication bias based on meta-regression results
+### 11. Discussion of the possibility of publication bias based on meta-regression results
 
-Despite the absence of the blank area in the bottom right corner of Figure \@ref(fig:fig3), the distribution of effect sizes in the funnel plot visualization in Figure \@ref(fig:fig3) and Figure \@ref(fig:fig4) is still relatively symmetrical funnel-shaped distribution, with no significant publication bias. However, we found high precision (small variance) in all of these experiments, which should have been concentrated at the top in a more concentrated area, but instead found that the difference in effect size was about the same as at the bottom, and that no significant spread occurred as it should have. It would be expected that as the sampling variance increases, the spread of effect sizes should increase, but in the funnel plot visualisation in Figure \@ref(fig:fig3) Figure \@ref(fig:fig4) there is no significant spread of effect sizes, instead effect sizes spread significantly even when the variance is small. That is, the effect size does not gradually fix as the sample size increases and the sampling variance decreases. This indicates that this effect size does not exist stably and may not be present.  
-Not only that, but we find in Figure \@ref(fig:fig3) that the studies with significant differences found in the contour-enhanced funnel plots tend to have very large effect sizes, and there is a clear selection bias for publication, i.e. a large number of non-significant results are not published. In Figure \@ref(fig:fig4) we find a number of studies with extremely extreme effect sizes and variances.  
+Although there is no blank area in the bottom right corner of Figure \@ref(fig:fig3), this may be due to the high precision (small sampling variance) of all these studies.
+The distribution of effect sizes in the funnel plot visualization in Figure \@ref(fig:fig3) and Figure \@ref(fig:fig4) is still relatively symmetrical funnel-shaped distribution, with no significant asymmetric publication bias.
+This can also be supported by the results of the fit test through the meta-analysis model (p=`r metareg_v$pval[2]`, CI=`r metareg_v$ci.lb[2]`\~ `r metareg_v$ci.ub[2]`).
+However, in Figure \@ref(fig:fig3), we found high precision (small variance) in all of these experiments, which should have been concentrated at the top in a more concentrated area, but instead found that the difference in effect size was about the same as at the bottom, and that no significant spread occurred as it should have.
+It would be expected that as the sampling variance increases, the spread of effect sizes should increase, but in the funnel plot visualisation in Figure \@ref(fig:fig3) Figure \@ref(fig:fig4) there is no significant spread of effect sizes, instead effect sizes spread significantly even when the variance is small.
+That is, the effect size does not gradually fix as the sample size increases and the sampling variance decreases.
+This indicates that this effect size does not exist stably and may not be present.\
+Not only that, but we find in Figure \@ref(fig:fig3) that the studies with significant differences found in the contour-enhanced funnel plots tend to have very large effect sizes, and there is a clear selection bias for publication, i.e. a large number of non-significant results are not published (large number of missing studies in blank areas).
+In Figure \@ref(fig:fig4) we find a number of studies with extremely extreme effect sizes and variances.
+
+In Figure \@ref(fig:fig5), which visualises the mean effect size with year of publication, we find an extremely significant time lag bias.
+There does appear to be a significant negative correlation between mean effect size and year.
+The initial studies had extremely extreme mean effect sizes, but as subsequent studies continued, the effect sizes converged to reasonable levels.\
+It is also noteworthy that the earlier studies had smaller sample sizes (i.e. lower precision).
+However, these early studies appear to have higher (exaggerated) effects compared to studies conducted in later years.\
+We can actually quantify time-lagged bias using multilevel meta-regression.
+Table \@ref(tab:tab2) shows that the time lag explains `r r2_time[1]*100` % of the variation in lnRR and has a significant effect with a p-value of `r metareg_time$pval[2]` (p\<0.05) and a 95% confidence interval of `r metareg_time$ci.lb [2]` to `r metareg_time$ci.ub [2]` , which does not cross the no-effect line, suggesting a stable effect variable.
+And with an estimated value of `r metareg_time$b[2]` , this stable and significant effect is negative.
+
+The results of the meta-regression model with inverse sampling variance did not detect a 'file drawer' effect.
+We can see that `V_lnRR` does not significantly affect the effect size, with a p-value of `r metareg_time2$pval[1]` greater than 0.05 and a 95% confidence interval of `r metareg_time2$ci.lb[1]` to `r metareg_time2$ci.ub[1]`, spanning the 0 point.
+
+We can actually create a model to account for these two effects and explain the possible covariance between the two.
+We can obtain the overall mean effect size (lnRR) of `r metareg_time_c$b[1]` when controlling for small sample and time lag bias as.
+We can even conclude that ocean acidification does not have a significant effect(p = `r metareg_time_c$pval[1]`, CI = `r metareg_time_c$ci.lb[1]`\~ `r metareg_time_c$ci.ub[1]`) on fish behaviour when considering the two sources of publication bias.
+We find that in this combined model, again the time lag bias has a significant effect (p = `r metareg_time_c$pval[2]`, CI = `r metareg_time_c$ci.lb[2]`\~ `r metareg_time_c$ci.ub[2]`) while the 'file drawer' effect does not have a significant effect (p = `r metareg_time_c$pval[3]`, CI = `r metareg_time_c$ci.lb[3]`\~ `r metareg_time_c$ci.ub[3]`).
+This implies that there is publication bias.
+There is a "decline effect" of publication bias.
+This may be due to the initial researchers selectively reporting studies with significant effect sizes.
+They exaggerate effect sizes to attract attention, facilitate publication, attract citations and financial support.
+
+### 12. Discuss publication bias with reference to the study by [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511)
+
+When comparing this with the study by [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511), we find that we used lnRR when fitting the model for meta-analysis and when analysing publication bias whereas [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511) used the absolute value of lnRR.  
+This prompted us to revisit the significance of positive and negative InRR values, as many behavioural changes can be described by a positive and negative functional trade-off, i.e. the measures of fish behavioural change in this metadata set are heterogeneous.    
+This means that a negative InRR effect size in one study does not offset a positive InRR effect size in another study, for example, even if ocean acidification has a significant effect on increased fish activity, it may manifest itself by making it more difficult for predators to catch prey in one study (negative InRR) and easier to notice prey in another (positive InRR).
+However, both studies actually support the idea that ocean acidification has a significant effect on fish behaviour (activity).  
+Therefore, in order to obtain a more accurate analysis, the scale should also be harmonised in terms of assigning a functional direction to behavioural changes.  
+Thus, we can scrutinise the original metadata set and find that functional directions are not assigned to behavioural changes due to inherent difficulties.
+They therefore convert individual effect sizes to absolute values, as positive and negative functional directions cannot simply cancel out.
+Although this would overestimate absolute effect sizes and complicate true population-level inferences, absolute values in their study still provide a measure of whether ocean acidification has an effect on fish behaviour and whether there is publication-biased variation in the effect sizes of such effects.
+It is also useful to know the strength of effects that ignore directionality([Frieder et al.,2013](https://doi.org/10.1093/schbul/sbt035), [László et al.,2006](https://doi.org/10.1093/beheco/ark005) ).  
+So [Clements et al.(2022)](https://doi.org/10.1371/journal.pbio.3001511) first used the absolute value of lnRR for their analysis, and if after concluding with the absolute value analysis that ocean acidification does have an effect on fish behaviour, this could be further investigated by removing the absolute value and assigning a functional direction to the behavioural change in the next step.  
   
-In Figure \@ref(fig:fig5), which visualises the mean effect size with year of publication, we find an extremely significant time lag bias. There does appear to be a significant negative correlation between mean effect size and year. The initial studies had extremely extreme mean effect sizes, but as subsequent studies continued, the effect sizes converged to reasonable levels.    
-It is also noteworthy that the earlier studies had smaller sample sizes (i.e. lower precision). However, these early studies appear to have higher (exaggerated) effects compared to studies conducted in later years.    
-We can actually quantify time-lagged bias using multilevel meta-regression. Table  \@ref(tab:tab2) shows that the time lag explains `r r2_time[1]*100` % of the variation in lnRR and has a significant effect with a p-value of `r metareg_time$pval[2]` (p<0.05) and a 95% confidence interval of `r metareg_time$ci.lb [2]` to `r metareg_time$ci.ub [2]` , which does not cross the no-effect line, suggesting a stable effect variable. And with an estimated value of `r metareg_time$b[2]` , this stable and significant effect is negative.    
-    
-The results of the meta-regression model with inverse sampling variance did not detect a 'file drawer' effect. We can see that `V_lnRR` does not significantly affect the effect size, with a p-value of `r metareg_time2$pval[1]` greater than 0.05 and a 95% confidence interval of `r metareg_time2$ci.lb[1]` to `r metareg_time2$ub[1]`, spanning the 0 point.   
-   
-We can actually create a model to account for these two effects and explain the possible covariance between the two. We can obtain the overall mean effect size (lnRR) of `r metareg_time_c$b[1]` when controlling for small sample and time lag bias as. We can even conclude that ocean acidification does not have a significant effect(p= `r metareg_time_c$pval[1]`, CI=`r metareg_time_c$ci.lb[1]`~ `r metareg_time_c$ci.ub[1]`) on fish behaviour when considering the two sources of publication bias. We find that in this combined model, again the time lag bias has a significant effect (p= `r metareg_time_c$pval[2]`, CI=`r metareg_time_c$ci.lb[2]`~ `r metareg_time_c$ci.ub[2]`) while the 'file drawer' effect does not have a significant effect (p= `r metareg_time_c$pval[3]`, CI=`r metareg_time_c$ci.lb[3]`~ `r metareg_time_c$ci.ub[3]`). This implies that there is publication bias. There is a  “decline effect” of publication bias. This may be due to the initial researchers selectively reporting studies with significant effect sizes. They exaggerate effect sizes to attract attention, facilitate publication, attract citations and financial support.  
+However, [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511) obtained no significant effect of ocean acidification on fish behaviour when analysed with absolute values.
+In particular, they reveal an extreme "downward effect" of ocean acidification on fish behaviour, i.e. a significant time-lag bias in this area.
+Over time, the effect sizes initially found to be significant and scientifically apparent gradually lose their strength and return to reasonable levels.This is consistent with what we have found previously.
+Such effects are prevalent not only in ecology and evolution, as described by [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511), but in a range of scientific studies where similar experiments are conducted[Schooler (2011)](https://doi.org/10.1038/470437a).
+Effect sizes do change in the literature, but how this change is caused. [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511) discuss three factors that may lead to changes in effect size including biology, methodology and publication practices and find that the recession effect solved in this area cannot be explained by 3 possible biological explanations including (1) cold water species; (2) non-olfactory related behaviour; and (3) non-larval life stages.
   
-
-
-
-### 12 Discuss publication bias with reference to the study by [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511) 
-
-
-When comparing this with the study by[Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511). we find that we used lnRR when fitting the model for meta-analysis and when analysing publication bias whereas a et al. used the absolute value of lnRR.    
-This prompted us to revisit the significance of positive and negative InRR values, as many behavioural changes can be described by a positive and negative functional trade-off, i.e. the measures of fish behavioural change in this metadata set are heterogeneous. This means that a negative InRR effect size in one study does not offset a positive InRR effect size in another study, for example, even if ocean acidification has a significant effect on increased fish activity, it may manifest itself by making it more difficult for predators to catch prey in one study (negative InRR) and easier to notice prey in another (positive InRR). However, both studies actually support the idea that ocean acidification has a significant effect on fish behaviour (activity). Therefore, in order to obtain a more accurate analysis, the scale should also be harmonised in terms of assigning a functional direction to behavioural changes.    
-Thus, we can scrutinise the original metadata set and find that functional directions are not assigned to behavioural changes due to inherent difficulties.         
-They therefore convert individual effect sizes to absolute values, as positive and negative functional directions cannot simply cancel out. Although this would overestimate absolute effect sizes and complicate true population-level inferences, absolute values in their study still provide a measure of whether ocean acidification has an effect on fish behaviour and whether there is publication-biased variation in the effect sizes of such effects. It is also useful to know the strength of effects that ignore directionality([Frieder et al. (2013)](https://doi.org/10.1093/schbul/sbt035),[László et al. (2006)](https://doi.org/10.1093/beheco/ark005) ).    
-So [Clements et al.(2022)](https://doi.org/10.1371/journal.pbio.3001511)  first used the absolute value of lnRR for their analysis, and if after concluding with the absolute value analysis that ocean acidification does have an effect on fish behaviour, this could be further investigated by removing the absolute value and assigning a functional direction to the behavioural change in the next step.   
+The key to this decline effect as discussed by [Schooler (2011)](https://doi.org/10.1038/470437a) and [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511). is that the high effect size of the starting study overestimates reality.
+As the example of the effects of ocean acidification on fish behaviour, [Schooler (2011)](https://doi.org/10.1038/470437a) analysed two types of publication bias, namely methodological bias and publication practice bias, that influenced the variation in effect sizes.
+They found that the vast majority of high effect size studies in the field tended to be characterised by low sample sizes, but were published in high impact journals and had a disproportionate impact on the field in terms of citations.
+And these high effect size, low sample size preliminary studies may have originated from researcher academic misconduct. They express widespread concern about low sample sizes and selective publication, not only in the field of ocean acidification, but also in the wider scientific discipline. The effect of early exaggeration can have a huge impact on the scientific process and on scientists themselves.
   
-However, [Clements et al. (2022)](https://doi.org/10.1371/journal.pbio.3001511)  obtained no significant effect of ocean acidification on fish behaviour when analysed with absolute values. In particular, they analysed two new publication biases i.e. publication citation bias and the effect of investigators. They found that the vast majority of effect size studies in the field tend to be characterised by low sample sizes, but are published in high impact journals and have a disproportionate impact on the field in terms of citations. And these high effect size, low sample size initial studies may have originated as a result of researcher academic misconduct.They expressed widespread concern about low sample sizes and selective publication, not only in the field of ocean acidification but also in the wider scientific discipline. Early exaggerated effects with significant impact can have a huge impact on the scientific process and on the scientists themselves.
+By comparing the results of our meta-analysis with those of a et al. it was found that we lacked a weighting component when visualising the decline effect i.e. weighting the individual effect sizes according to their accuracy. We should therefore calculate the weighted average effect size (and its associated uncertainty, i.e. upper and lower confidence limits) for each year represented in the dataset to update the results of our meta-analysis. 
+As we mentioned earlier,study of [Schooler (2011)](https://doi.org/10.1038/470437a) should also assign functional direction to behavioural change using lnRR for meta-analysis, although overestimating effect sizes using absolute values does not affect the analysis of the decline effect but would be problematic if it were to visualise publication bias with funnel plots as in our meta-analysis.
 
 
 
